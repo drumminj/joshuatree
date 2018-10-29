@@ -1,0 +1,118 @@
+.jt-toolbar {
+	align-items: center;
+	animation: showtoolbar 250ms ease-in-out;
+	background-color: rgba(34, 34, 34, 0.95);
+	border: 3px solid #aaa;
+	border-radius: 4px;
+	bottom: 0px;
+	color: #fff;
+	display: flex;
+	left: 0px;
+	line-height: 1;
+	margin: 0;
+	overflow: hidden;
+	padding: 3px;
+	position: fixed;
+	right: 0px;
+	z-index: 999;
+}
+
+/* animation to expose toolbar */
+@keyframes showtoolbar {
+ 	0% {
+    	transform: translateY(100%);
+    	opacity: 0;
+ 	}
+  	100% {
+    	transform: translateY(0%);
+    	opacity: 1;
+  	}
+}
+
+.jt-icon-link {
+	flex: 0 0 auto;
+	line-height: 0;
+}
+
+.jt-toolbar-button {
+	font-size: 14px;
+	height: 26px;
+	transition: opacity 200ms;
+	white-space: pre;
+}
+
+.jt-toolbar-button:disabled {
+	opacity: 0.35;
+}
+
+.jt-toolbar-header {
+	align-items: center;
+	display: flex;
+}
+
+.jt-toolbar-header-text {
+	color:#fefefe;
+	flex: 0 0 auto;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.jt-toolbar-icon {
+	width: 30px;
+	height: 30px;
+	border: 1px solid #aaa;
+}
+
+.jt-toolbar-menubutton {
+	border: 0px;
+	cursor: pointer;
+	flex: 0 0 auto;
+	margin-left: 2px;
+	width: 9px;
+	height: 9px;
+}
+
+.jt-toolbar-status {
+	color:#bbb;
+	font-size: 11px;
+}
+
+.jt-toolbar-text {
+	flex: 1 0 auto;
+	line-height: 1.2;
+	padding: 0 5px;
+	text-align: left;
+}
+
+.jt-toolbar-nav-container {
+	flex: 0 0 auto;
+	margin-right: 2px;
+}
+
+#jt-toolbar-next {
+	margin-left: 2px;
+	padding: 0 8px 0 14px;
+}
+
+#jt-toolbar-next-label {
+	padding-right: 3px;
+}
+
+#jt-toolbar-prev {
+	margin-right: 2px;
+	padding: 0 14px 0 8px;
+}
+
+#jt-toolbar-prev-label {
+	padding-left: 3px;
+}
+
+#jt-nextbutton-menu {
+	position: fixed;
+}
+
+@media screen and (max-width: 480px) {
+	.jt-toolbar-button-label {
+		display: none;
+	}
+}

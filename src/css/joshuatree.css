@@ -1,0 +1,138 @@
+.comment-body .comment-meta {
+    background-color: rgba(51, 85, 119, 0.1);
+    border: 1px solid rgb(51, 85, 119);
+    border-radius: 3px;
+    transition: background-color 250ms ease, border-color 250ms ease;
+}
+
+#comments .comment.jt-ignored-comment > .comment-body > .comment-meta {
+    background-color: rgba(158, 85, 72, 0.12);
+    border-color: rgb(158, 85, 72);
+}
+
+#comments .comment:not(.jt-new-comment) > .comment-body a time {
+    color: #357;
+}
+
+#comments .comment.jt-new-comment:not(.jt-ignored-comment) > .comment-body > .comment-meta {
+    background-color: rgba(51, 85, 119, 0.9);
+}
+
+#comments .comment.jt-new-comment.jt-ignored-comment > .comment-body > .comment-meta {
+    background-color: rgba(158, 85, 72, 0.95);
+}
+
+#comments .comment.jt-new-comment > .comment-body > .comment-meta .fn,
+#comments .comment.jt-new-comment > .comment-body > .comment-meta .fn .url {
+    color: #fefefe;
+}
+
+@media screen and (max-width: 768px) {
+    #comments .comment .children {
+        border-left: 3px solid rgba(51, 85, 119, 0.25);
+        margin-left: 0;
+        padding-left: 6px;
+    }
+}
+
+.meta-comments.new-comments,
+.meta-comments.new-comments a.comments-link {
+    color: rgba(51,85,119);
+}
+
+.jt-hidden-comment {
+    text-align: left;
+    font-size: 75%;
+    padding: 3px 3px;
+}
+
+.jt-format-button {
+    background-color: transparent;
+    border: 2px solid #ededed;
+    color: #989898;
+    font-size: 16px;
+    margin: 0 4px 0 0;
+	padding: 0 6px;
+}
+
+.jt-format-button:last-child {
+    margin: 0;
+}
+
+.jt-format-button:hover,
+.jt-format-button:active {
+    background-color: transparent;
+    color: #357;
+}
+
+.jt-format-buttons {
+    text-align: left;
+    margin-top: 3px;
+}
+
+.jt-overlay {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+	top: 0;
+	visibility: hidden;
+	z-index: 1002;
+}
+
+.jt-overlay-bg {
+    background-color: #000;
+    bottom: 0;
+    left: 0;
+    opacity: 0.7;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: -1;
+}
+
+.jt-overlay-content {
+    background-color: #fcfcfc;
+	border: 1px solid #357;
+    border-radius: 2px;
+    box-shadow: 3px 3px 6px #333;
+    display: inline-block;
+    left: 50%;
+    max-width: 440px;
+    padding: 8px 12px;
+    position: absolute;
+    top: 40%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+}
+
+.jt-link-dialog {
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.75em;
+    text-align: left;
+}
+
+.jt-link-dialog h2 {
+    color: #484848;
+	margin: 0px;
+}
+
+.jt-link-dialog .jt-link-input {
+    border: 1px solid #666;
+    display: block;
+	margin: 4px 0 8px 0;
+	padding: 2px 6px;
+}
+
+.jt-overlay .jt-button-container {
+    text-align: right;
+}
+
+.jt-overlay .jt-input-button {
+    font-size: 0.75em;
+	margin: 0px;
+	margin-left: 5px;
+	padding: 2px 8px;
+}
