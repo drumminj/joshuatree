@@ -1,2 +1,2 @@
 # joshuatree
-JoshuaTree Browser Extension
+JoshuaTree Browser Extension for Chrome and Firefox
