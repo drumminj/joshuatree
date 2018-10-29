@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JoshuaTree Extension Options</title>
+    <script type='text/javascript' src='scripts/utility.js'></script>
+    <script type='text/javascript' src='scripts/preferences.js'></script>
+    <script type='text/javascript' src='scripts/storage.js'></script>
+    <script type='text/javascript' src='scripts/options.js'></script>
+  </head>
+  <body>
+  	<form>
+      <fieldset style='padding: 8px;'>
+        <legend>Ignore List</legend>
+        <div style='margin-bottom:6px;font-size:85%;font-style: italic'>Add a user to the ignore list by context-clicking on their name in a comment and selecting 'Add to Ignore List' from the menu</div>
+  	    <select id='ignoreList' size='4' style='width: 100%; margin-bottom: 6px; background-image: "";'>
+  	    </select>
+        <br>
+        <button id='removeButton' type='button' style='float:right; margin-left:6px;'>Remove</button>
+      </fieldSet>
+      <br>
+      <fieldset style='padding: 8px;'>
+        <legend>Data Management</legend>
+        <div style='text-align:center'>
+          <label>Remember post information for</label>
+          <input id='lifetimeInput' type='number' value='0' min='1' max='7' step='1' size='1' style='margin-left: 2px;'/>
+          <label>days</label>
+          <br/><br/>
+          <button id='clearDataButton' type='button'>Clear Post Data</button>
+        </div>
+      </fieldset>
+  	</form>
+  </body>
+</html>

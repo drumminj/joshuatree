@@ -1,0 +1,20 @@
+.load-indicator {
+    align-items: center;
+    background-color: #262626;
+    border-radius: 4px;
+    color: #888;
+    display: flex;
+    font-family: "Trebuchet MS","Verdana","Arial", sans-serif;
+    font-size: 14px;
+    padding: 3px 12px 3px 6px;
+    position: fixed;
+    right: 3px;
+    top: 3px;
+    z-index: 1001;
+}
+
+.load-animation {
+    height: 16px;
+    margin-right: 6px;
+    width: 16px;
+}
