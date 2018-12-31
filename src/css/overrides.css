@@ -17,7 +17,7 @@
 }
 
 .meta .meta-category.shrink {
-    animation: shrink 125ms forwards ease;
+    animation: shrink 150ms forwards ease;
 }
 
 .meta .meta-comments.grow {
