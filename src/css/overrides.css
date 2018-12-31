@@ -1,3 +1,29 @@
+@keyframes shrink {
+    100% {
+        margin: 0;
+        max-width: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes grow {
+    100% { max-width: 1000px; }
+}
+
+.meta .meta-comments,
+.meta .meta-category {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.meta .meta-category.shrink {
+    animation: shrink 125ms forwards ease;
+}
+
+.meta .meta-comments.grow {
+    animation: grow 350ms forwards ease;
+}
+
 #comments .comment article.comment-body {
     border: none;
     line-height: 1.3;

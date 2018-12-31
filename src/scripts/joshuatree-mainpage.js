@@ -13,19 +13,21 @@ class JoshuaTreeExtension {
         }
 
         const loadIndicator = new LoadIndicator(contentDocument); // show load indicator
-        this._removeCategory(contentDocument);     // hide category indicators
-        this._modifyCommentCount(contentDocument); // update comment count with "new" count
-        loadIndicator.hide();                     // done loading -- hide indicator
+        this._hideCategory(contentDocument);                    // hide category indicators
+        this._modifyCommentCount(contentDocument);                // update comment count with "new" count
+        loadIndicator.hide();                                     // done loading -- hide indicator
     }
 
-    _removeCategory(contentDocument) {
+    _hideCategory(contentDocument) {
         if (!contentDocument) {
             return;
         }
 
+        // shrink width of category to zero while fading out
         const allCategory = contentDocument.body.getElementsByClassName('meta-category');
-        while (allCategory.length) {
-            allCategory[0].parentNode.removeChild(allCategory[0]);
+        for (const category of allCategory) {
+            category.style.maxWidth = `${category.offsetWidth}px`;
+            category.classList.add('shrink');
         }
     }
 
@@ -56,11 +58,16 @@ class JoshuaTreeExtension {
                     new CommentData(postMatches[1])
                         .getReadComments()
                         .then(readComments => {
+                            // grow width of item to allow room for comment count
+                            const parent = link.parentNode;
+                            parent.style.maxWidth = `${parent.offsetWidth}px`;
+                            parent.classList.add('grow');
+
                             const newCommentCount = Math.max(0, totalComments - readComments.length);
                             link.textContent = `${totalComments} ${totalComments > 1 ? 'Comments' : 'Comment'}` +
                                                ` (${newCommentCount} New)`;
                             if (newCommentCount) {
-                                link.parentNode.classList.add('new-comments');
+                                parent.classList.add('new-comments');
                             }
                         }).catch(noOp);
                 }

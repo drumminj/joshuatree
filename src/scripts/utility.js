@@ -77,7 +77,8 @@ class Utility {
     }
 
     // Scrolls document to show the element with elementID
-    static scrollToElement(contentDocument, elementID, addlOffset) {
+    static scrollToElement(contentDocument, elementID, easing, addlOffset) {
+        easing = easing || 'easeOutSine';
         addlOffset = addlOffset || 0;
         if (contentDocument && elementID) {
             const elt = contentDocument.getElementById(elementID);
@@ -93,7 +94,7 @@ class Utility {
                     duration = Math.min(duration, 0.75);
 
                     // animate scroll
-                    animationManager.createAnimation(scrollY, offset, duration, 'easeOutSine', setOffsetCallback);
+                    animationManager.createAnimation(scrollY, offset, duration, easing, setOffsetCallback);
                 }
             }
         }

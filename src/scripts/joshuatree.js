@@ -39,23 +39,15 @@ class JoshuaTreeExtension {
         this._prefs = new Preferences();
         this._commentProcessor = new CommentProcessor(contentDocument, this._commentData, this._prefs);
 
-        // override comment scroll animation settings (not 100% sure these take effect)
-        let script = 'wpexLocalize.scrollToHashTimeout = 0;';
-        script += 'wpexLocalize.localScrollSpeed = 1600;';
-        script += 'wpexLocalize.localScrollEasing = \'easeInOutQuart\';';
-        Utility.injectScript(script);
+        // override wpex comment scroll animation settings and handle scrolling ourselves
+        Utility.injectScript('wpexLocalize.scrollToHash = false;');
+        this._scrollToPageItem('comments', 'easeInOutSine');
 
         this._commentProcessor.processDocument()
             .then(unreadComments => {
+                // update comment count in toolbar
                 this._unreadComments = unreadComments;
-
-                // Add delays to account for the 'scroll' animation the theme does
-                // to get to comments, disallowing for interaction before the scroll is complete
-                window.addEventListener("load", () => {
-                    window.setTimeout(() => {
-                        this._toolbar.setCommentCount(unreadComments.length);
-                    }, 500);
-                });
+                this._toolbar.setCommentCount(unreadComments.length);
 
                 // ensure all links contained in comments open in new tab
                 this._addBlankTargetToLinks(contentDocument); // dependent on comment processor
@@ -156,16 +148,19 @@ class JoshuaTreeExtension {
         return matches && matches[1];
     };
 
+    _scrollToPageItem(itemId, easing) {
+        // blog has a 'sticky' header at top when scrolled past top bar, so check for that
+        // and account for it when scrolling
+        // NOTE: for now, just assume always scrolled past it
+        const header = this._document.getElementById('site-header');
+        const headerHeight = header.offsetHeight;
+        Utility.scrollToElement(this._document, itemId, easing, -headerHeight - 8);
+    }
+
     // Updates the index of the current read comment
     _updateReadCommentIndex(newIndex) {
-        // blog has a 'sticky' header at top in some situations, so check for that and account
-        // for it when scrolling
-        const header = this._document.getElementById('site-header-sticky-wrapper');
-        const headerHeight = header.classList.contains('is-sticky') ?
-            this._document.getElementById('site-header-sticky-wrapper').offsetHeight :
-            0;
         const commentId = this._unreadComments[newIndex];
-        Utility.scrollToElement(this._document, `comment-${commentId}`, -headerHeight - 8);
+        this._scrollToPageItem(`comment-${commentId}`);
         this._commentData.setReadComments(this._unreadComments.slice(0,newIndex + 1));
     };
 }
