@@ -42,9 +42,14 @@ class JoshuaTreeExtension {
         // override wpex comment scroll animation settings and handle scrolling ourselves
         Utility.injectScript('wpexLocalize.scrollToHash = false;');
 
-        const hash = (location.hash.charAt(0) === '#') ? location.hash.substring(1) : location.hash;
-        const scrollToId = hash === ('view_comments' || hash === 'comments_reply') ? 'comments' : hash;
-        this._scrollToPageItem(scrollToId, 'easeInOutSine');
+        // Scroll to appropriate element based on hash in the url.
+        // Must do this on a timeout to ensure it happens after the browser
+        // navigates to any anchor tag
+        window.setTimeout(() => {
+            const hash = (location.hash.charAt(0) === '#') ? location.hash.substring(1) : location.hash;
+            const scrollToId = hash === ('view_comments' || hash === 'comments_reply') ? 'comments' : hash;
+            this._scrollToPageItem(scrollToId, 'easeInOutSine');
+        }, 100);
 
         this._commentProcessor.processDocument()
             .then(unreadComments => {

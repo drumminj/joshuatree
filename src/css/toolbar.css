@@ -38,6 +38,7 @@
     font-size: 14px;
     height: 26px;
     transition: opacity 200ms;
+    user-select: none;
     white-space: pre;
 }
 

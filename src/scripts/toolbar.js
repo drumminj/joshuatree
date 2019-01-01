@@ -94,6 +94,7 @@ class Toolbar {
 
         const nextButton = Utility.createElement(contentDocument, 'button', 'jt-toolbar-button', 'jt-toolbar-next');
         nextButton.addEventListener('click', () => this._setCommentIndex(this._commentIndex + 1), false);
+        nextButton.addEventListener('contextmenu', evt => this._showContextMenu(evt), false);
         nextButton.appendChild(this._nextButtonLabel);
         nextButton.appendChild(nextButtonArrows);
         this._nextButton = nextButton;
@@ -161,12 +162,31 @@ class Toolbar {
         }
     }
 
+    // Handler for context menu on 'next' navigation button
+    _showContextMenu(evt) {
+        Utility.killEvent(evt);
+
+        // 'mark all comments read' popup menu item
+        const allReadMenuItems = [{
+            text: 'Mark All Comments Read',
+            url: '',
+            callback: () => this._setCommentIndex(this._commentCount)
+        }];
+
+        // because we're positioning relative to bottom-right,
+        // need to offset client coords by content width/height
+        const xPos = window.innerWidth - evt.clientX + 2;
+        const yPos = window.innerHeight - evt.clientY + 2;
+
+        this._contextMenu.show(allReadMenuItems, {'x': xPos, 'y': yPos}, 'bottomRight', null);
+    }
+
     // update menu button's image/state
     _updateMenuButtonState(state) {
         this._menuButton.src = (this._menuShowing || state === 'active') ?
             joshuaTreeResources.menuButtonActiveURL :
             joshuaTreeResources.menuButtonURL;
-    };
+    }
 
     // Update text/state of toolbar navigation buttons
     _updateNavigationButtons() {
