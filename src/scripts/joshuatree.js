@@ -159,9 +159,12 @@ class JoshuaTreeExtension {
     _scrollToPageItem(itemId, easing) {
         // blog has a 'sticky' header at top when scrolled past top bar, so check for that
         // and account for it when scrolling
-        // NOTE: for now, just assume always scrolled past it
+        // NOTE: For now, just assume always scrolled past it, though it doesn't show in
+        // 'mobile' layout with breakpoint at 960px.
+        // Ideally we'd inspect the header to see if it's sticky, but we can't do that on
+        // initial load/scroll
         const header = this._document.getElementById('site-header');
-        const headerHeight = header.offsetHeight;
+        const headerHeight = window.innerWidth >= 960 ? header.offsetHeight : 0;
         Utility.scrollToElement(this._document, itemId, easing, -headerHeight - 8);
     }
 
