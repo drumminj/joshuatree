@@ -47,7 +47,7 @@ class JoshuaTreeExtension {
         // navigates to any anchor tag
         window.setTimeout(() => {
             const hash = (location.hash.charAt(0) === '#') ? location.hash.substring(1) : location.hash;
-            const scrollToId = hash === ('view_comments' || hash === 'comments_reply') ? 'comments' : hash;
+            const scrollToId = (hash === 'view_comments' || hash === 'comments_reply') ? 'comments' : hash;
             this._scrollToPageItem(scrollToId, 'easeInOutSine');
         }, 100);
 
