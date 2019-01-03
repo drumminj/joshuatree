@@ -3,7 +3,7 @@
 
     "name": "JoshuaTree",
     "description": "Usability enhancements for The Housing Bubble Blog (http://housingbubble.blog)",
-    "version": "4.8.2",
+    "version": "4.9.0",
 
     "applications": {
         "gecko": {
@@ -39,8 +39,8 @@
                 "scripts/commentData.js",
                 "scripts/loadIndicator.js",
                 "scripts/resources.js",
-                "scripts/storage.js",
                 "scripts/utility.js",
+                "scripts/storage.js",
                 "scripts/joshuatree-mainpage.js"
             ],
             "run_at": "document_end"
@@ -68,9 +68,9 @@
                 "scripts/options.js",
                 "scripts/preferences.js",
                 "scripts/resources.js",
+                "scripts/utility.js",
                 "scripts/storage.js",
                 "scripts/toolbar.js",
-                "scripts/utility.js",
                 "scripts/joshuatree.js"
             ],
             "run_at": "document_end"

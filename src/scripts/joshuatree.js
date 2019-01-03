@@ -10,17 +10,66 @@
 
 class JoshuaTreeExtension {
     constructor(contentDocument) {
-        this._postId = -1;
+        this._postId = -1;                  // id of post currently being viewed
         this._commentData = null;
         this._contextMenu = null;
         this._prefs = null;
         this._toolbar = null;
         this._commentProcessor = null;
-        this._document = contentDocument;
-        this._unreadComments = [];
+        this._document = contentDocument;   // cached reference to current DOM document
+        this._unreadComments = [];          // list of IDs of unread comments
         this._editorEnhancements = null;
+        this._scrolling = false;            // whether or not we're currently scrolling/animating
+        this._commentIndex = -1;            // current index into unread comments
 
         this._init(contentDocument);
+    }
+
+    // Helper which gets the amount of pixels to offset any scroll positions, based on presence
+    // of sticky header, any any 'slop' we want to add
+    _getScrollOffsetAmount() {
+        // blog has a 'sticky' header at top when scrolled past top bar, so check for that
+        // and account for it when scrolling
+        // NOTE: For now, just assume always scrolled past it, though it doesn't show in
+        // 'mobile' layout with breakpoint at 960px.
+        // Ideally we'd inspect the header to see if it's sticky, but we can't do that on
+        // initial load/scroll
+        const header = this._document.getElementById('site-header');
+        const headerHeight = window.innerWidth >= 960 ? header.offsetHeight : 0;
+        return headerHeight + 8;
+    }
+
+    // Callback to handle scroll events, which looks at the current
+    // scroll position and updates the current navigated comment
+    _handleScroll() {
+        // if we triggered this scroll, ignore the event/no-op
+        if (this._scrolling) {
+            return;
+        }
+
+        // Look at current scroll position and compare it to each comment, seeing which one
+        // is currently at the top. Update the 'read' comment state then based on which
+        // the user has scrolled to
+        const scrollPos = (window.scrollY || window.pageYOffset) + this._getScrollOffsetAmount();
+        let newIndex = this._unreadComments.length - 1;
+        for (let i = 0; i < this._unreadComments.length; i++) {
+            const comment = this._commentProcessor.getComment(this._unreadComments[i]);
+            if (comment) {
+                const offset = Utility.getRelativeOffset(comment.node, 'Top');
+                if (scrollPos < offset) {
+                    newIndex = i-1;
+                    break;
+                }
+            }
+        }
+
+        // Only update toolbar and storage if the actual index changed. This is important
+        // for throttling writes to synced storage, else Google gets grumpy
+        if (newIndex !== this._commentIndex) {
+            this._commentIndex = newIndex;
+            this._toolbar.setCommentIndex(newIndex);
+            this._commentData.setReadComments(this._unreadComments.slice(0, newIndex + 1));
+        }
     }
 
     // Initializes the extension object
@@ -50,6 +99,9 @@ class JoshuaTreeExtension {
             const scrollToId = (hash === 'view_comments' || hash === 'comments_reply') ? 'comments' : hash;
             this._scrollToPageItem(scrollToId, 'easeInOutSine');
         }, 100);
+
+        // Set up scroll event listener to update the toolbar based on current scroll location 
+        window.addEventListener("scroll", Utility.throttle(() => this._handleScroll(), 150));
 
         this._commentProcessor.processDocument()
             .then(unreadComments => {
@@ -156,23 +208,27 @@ class JoshuaTreeExtension {
         return matches && matches[1];
     };
 
-    _scrollToPageItem(itemId, easing) {
-        // blog has a 'sticky' header at top when scrolled past top bar, so check for that
-        // and account for it when scrolling
-        // NOTE: For now, just assume always scrolled past it, though it doesn't show in
-        // 'mobile' layout with breakpoint at 960px.
-        // Ideally we'd inspect the header to see if it's sticky, but we can't do that on
-        // initial load/scroll
-        const header = this._document.getElementById('site-header');
-        const headerHeight = window.innerWidth >= 960 ? header.offsetHeight : 0;
-        Utility.scrollToElement(this._document, itemId, easing, -headerHeight - 8);
+    // Helper/wrapper to scroll to the document element with the given id, using the specified
+    // easing function for the animation
+    _scrollToPageItem(eltId, easing) {
+        // set flag to ignore scroll events while we're the ones scrolling
+        this._scrolling = true;
+        Utility.scrollToElement(
+            this._document,
+            eltId,
+            easing,
+            -this._getScrollOffsetAmount(),
+            () => this._scrolling = false);
     }
 
-    // Updates the index of the current read comment
+    // Updates the index of the current read comment and scrolls to the comment
     _updateReadCommentIndex(newIndex) {
-        const commentId = this._unreadComments[newIndex];
-        this._scrollToPageItem(`comment-${commentId}`);
-        this._commentData.setReadComments(this._unreadComments.slice(0,newIndex + 1));
+        if (newIndex !== this._commentIndex) {
+            this._commentIndex = newIndex;
+            const commentId = this._unreadComments[newIndex];
+            this._scrollToPageItem(`comment-${commentId}`);
+            this._commentData.setReadComments(this._unreadComments.slice(0,newIndex + 1));
+        }
     };
 }
 

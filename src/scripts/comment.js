@@ -9,7 +9,7 @@ class Comment {
     constructor(elt) {
         this._isNew = false;
         this._isIgnored = false;
-        this._node = elt;
+        this.node = elt;
 
         this.id = this._parseId(elt);
         this.author = Comment.parseAuthor(elt);
@@ -57,9 +57,9 @@ class Comment {
 
     // Given a comment, hide the body and add a "Show Comment" link to unhide it
     _hideCommentBody() {
-        const contentDocument = this._node.ownerDocument;
+        const contentDocument = this.node.ownerDocument;
 
-        let content = this._node.getElementsByClassName('comment-content');
+        let content = this.node.getElementsByClassName('comment-content');
         content = content && content[0];
         if (content) {
             // hide the content
@@ -89,7 +89,7 @@ class Comment {
         }
 
         // Hide the 'reply' link
-        let reply = this._node.getElementsByClassName('reply');
+        let reply = this.node.getElementsByClassName('reply');
         if (reply && reply[0]) {
             reply[0].style.display = 'none';
         }
@@ -104,19 +104,19 @@ class Comment {
     // "Show comment" link is also removed
     _showCommentBody() {
         // remove DIV with link to "show comment" link
-        const hiddenCommentDiv = this._node.getElementsByClassName('jt-hidden-comment');
+        const hiddenCommentDiv = this.node.getElementsByClassName('jt-hidden-comment');
         if (hiddenCommentDiv && hiddenCommentDiv[0]) {
             hiddenCommentDiv[0].parentNode.removeChild(hiddenCommentDiv[0]);
         }
 
         // show the comment content
-        const content = this._node.getElementsByClassName('comment-content');
+        const content = this.node.getElementsByClassName('comment-content');
         if (content && content[0]) {
             content[0].style.display = '';
         }
 
         // show the 'reply' link
-        let reply = this._node.getElementsByClassName('reply');
+        let reply = this.node.getElementsByClassName('reply');
         if (reply && reply[0]) {
             reply[0].style.display = '';
         }
@@ -125,9 +125,9 @@ class Comment {
     // Adds or removes the specified class to the comment
     _updateClass(className, add) {
         if (add) {
-            this._node.classList.add(className);
+            this.node.classList.add(className);
         } else {
-            this._node.classList.remove(className);
+            this.node.classList.remove(className);
         }
     };
 }

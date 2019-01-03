@@ -15,6 +15,11 @@ class CommentProcessor {
         this._parseComments(contentDocument);
     }
 
+    // Returns comment object for given id, if it exists
+    getComment(id) {
+        return this._commentLookup.get(id);
+    }
+    
     // Process the document, identifying and modifying display
     // of new and ignored comments
     processDocument(ignoreOnly) {

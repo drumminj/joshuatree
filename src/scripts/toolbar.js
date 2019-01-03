@@ -38,7 +38,14 @@ class Toolbar {
         this._updateNavigationButtons();
     }
 
-    // Add toolbar/footer
+    // Set index of currently 'active' comment
+    setCommentIndex(index) {
+        // pin to [-1, commentCount-1], where -1 means "no active comment"
+        this._commentIndex = Math.min(Math.max(-1, index), this._commentCount - 1);
+        this._updateNavigationButtons();
+    }
+
+    // Add toolbar/footer to document
     _create(contentDocument) {
 
         // make icon link to main page
@@ -81,7 +88,7 @@ class Toolbar {
         this._prevButtonLabel = Utility.createElement(contentDocument, 'span', 'jt-toolbar-button-label', 'jt-toolbar-prev-label');
 
         const prevButton = Utility.createElement(contentDocument, 'button', 'jt-toolbar-button', 'jt-toolbar-prev');
-        prevButton.addEventListener('click', () => this._setCommentIndex(this._commentIndex - 1), false);
+        prevButton.addEventListener('click', () => this._incrementCommentIndex(-1), false);
         prevButton.appendChild(prevButtonArrows);
         prevButton.appendChild(this._prevButtonLabel);
         this._prevButton = prevButton;
@@ -93,7 +100,7 @@ class Toolbar {
         this._nextButtonLabel = Utility.createElement(contentDocument, 'span', 'jt-toolbar-button-label', 'jt-toolbar-next-label');
 
         const nextButton = Utility.createElement(contentDocument, 'button', 'jt-toolbar-button', 'jt-toolbar-next');
-        nextButton.addEventListener('click', () => this._setCommentIndex(this._commentIndex + 1), false);
+        nextButton.addEventListener('click', () => this._incrementCommentIndex(1), false);
         nextButton.addEventListener('contextmenu', evt => this._showContextMenu(evt), false);
         nextButton.appendChild(this._nextButtonLabel);
         nextButton.appendChild(nextButtonArrows);
@@ -151,17 +158,6 @@ class Toolbar {
         this._updateMenuButtonState();
     };
 
-    // Set index of current comment
-    _setCommentIndex(index) {
-        // pin to [0, commentCount-1]
-        this._commentIndex = Math.min(Math.max(0, index), this._commentCount - 1);
-        this._updateNavigationButtons();
-
-        if (this._navigateCallback) {
-            this._navigateCallback(this._commentIndex);
-        }
-    }
-
     // Handler for context menu on 'next' navigation button
     _showContextMenu(evt) {
         Utility.killEvent(evt);
@@ -170,7 +166,7 @@ class Toolbar {
         const allReadMenuItems = [{
             text: 'Mark All Comments Read',
             url: '',
-            callback: () => this._setCommentIndex(this._commentCount)
+            callback: () => this._incrementCommentIndex(this._commentCount)
         }];
 
         // because we're positioning relative to bottom-right,
@@ -179,6 +175,14 @@ class Toolbar {
         const yPos = window.innerHeight - evt.clientY + 2;
 
         this._contextMenu.show(allReadMenuItems, {'x': xPos, 'y': yPos}, 'bottomRight', null);
+    }
+
+    // Set index of current comment based on user interaction with navigation buttons
+    _incrementCommentIndex(increment) {
+        this.setCommentIndex(this._commentIndex + increment);
+        if (this._navigateCallback) {
+            this._navigateCallback(this._commentIndex);
+        }
     }
 
     // update menu button's image/state

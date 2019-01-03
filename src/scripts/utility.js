@@ -47,7 +47,7 @@ class Utility {
     static getRelativeOffset(element, side, parentID) {
         let offset = 0;
         while (element) {
-            offset += element['offset' + side];
+            offset += (element['offset' + side] || 0);
             element = element.offsetParent;
             if (element && parentID && element.id === parentID)
                 break;
@@ -76,27 +76,52 @@ class Utility {
         }
     }
 
-    // Scrolls document to show the element with elementID
-    static scrollToElement(contentDocument, elementID, easing, addlOffset) {
+    // Scrolls document to show the element with elementID, using the given easing
+    // function. If padding is passed, will leave that space(in pixels) at the top of the window
+    // when scrolled.  Calls 'onComplete' callback when animation done, if provided
+    static scrollToElement(contentDocument, elementID, easing, padding, onComplete) {
         easing = easing || 'easeOutSine';
-        addlOffset = addlOffset || 0;
+        padding = padding || 0;
         if (contentDocument && elementID) {
             const elt = contentDocument.getElementById(elementID);
             if (elt) {
-                const offset = Utility.getRelativeOffset(elt, 'Top') + addlOffset;
-                if (offset != -1) {
-                    const setOffsetCallback = newOffset => window.scrollTo(0, Math.floor(newOffset));
-                    const scrollY = window.scrollY;
+                const offset = Utility.getRelativeOffset(elt, 'Top') + padding;
+                const setOffsetCallback = newOffset => window.scrollTo(0, Math.floor(newOffset));
+                const scrollY = window.scrollY;
 
-                    // scroll at ~1600px/s, with min of 250ms and max of 750ms
-                    let duration = Math.abs(offset - scrollY) / 1600;
-                    duration = Math.max(duration, 0.25);
-                    duration = Math.min(duration, 0.75);
+                // scroll at ~1600px/s, with min of 250ms and max of 750ms
+                let duration = Math.abs(offset - scrollY) / 1600;
+                duration = Math.max(duration, 0.25);
+                duration = Math.min(duration, 0.75);
 
-                    // animate scroll
-                    animationManager.createAnimation(scrollY, offset, duration, easing, setOffsetCallback);
-                }
+                // animate scroll
+                animationManager.createAnimation(scrollY, offset, duration, easing, setOffsetCallback, onComplete);
             }
         }
+    }
+
+    // Throttle helper which returns a function that wraps the given function, ensuring it gets called
+    // no more frequently than 'threshold' milliseconds.  Will execute with the last args passed
+    static throttle(fn, threshold) {
+        let args;
+        let last;
+        let timerId;
+
+        threshold = threshold || 250;
+
+        const later = () => {
+            last = Date.now();
+            timerId = undefined;
+            fn.apply(undefined, args);
+        };
+
+        return () => {
+            args = arguments;
+            if (last && Date.now() < (last + threshold)) {
+                timerId = timerId || window.setTimeout(later, threshold);
+            } else {
+                later();
+            }
+        };
     }
 }

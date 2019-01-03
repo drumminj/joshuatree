@@ -1,4 +1,5 @@
-// Dependencies: NONE
+// Dependencies:
+//  * utility.js
 
 const separator = ';';
 const msInDay = 24 * 60 * 60 * 1000;
@@ -7,7 +8,6 @@ const msInDay = 24 * 60 * 60 * 1000;
 // Used to specify which to store as well as key to use
 const StorageItem = {
     Prefs: 'prefs',
-    LastPost: 'lastPost',
     PostData: 'p_'
 }
 
@@ -16,7 +16,6 @@ class Storage {
         // cache of data saved in chrome storage
         this._prefs = {};
         this._postData = {};
-        this._lastPostTime = 0;
 
         // track whether we're making a change to storage to skip
         // processing the 'change' event
@@ -31,6 +30,11 @@ class Storage {
 
         // start load
         this._loadData = this._readFromStorage();
+
+        // ensure we save no more than once every 1.5s to make Google happy (can't
+        // write to synced storage more than once every 2s over course of an hour)
+        this._pendingSaveData = null;
+        this._throttledSaveToStorage = Utility.throttle(this._saveToStorage.bind(this), 1500);
     }
 
     // Removes all comment history data
@@ -38,12 +42,6 @@ class Storage {
         this._modifyingStorage = true;
         this._storageArea.remove(Object.keys(this._postData));
         this._postData = {};
-    }
-
-    // Returns a promise which resolves with timestamp for last time comment was posted
-    getLastPostTime() {
-        return this._loadData
-            .then(() => this._lastPostTime);
     }
 
     // Returns a promise which resolves to extension preferences
@@ -61,12 +59,6 @@ class Storage {
                 const postDataStr = this._postData[key] ? this._postData[key].readComments  : '';
                 return Storage._decodeCommentData(postDataStr);
             });
-    }
-
-    // Stores timestamp for last time comment was posted
-    storeLastPostTime(postTime) {
-        this._lastPostTime = postTime;
-        this._storeData(StorageItem.LastPost);
     }
 
     // Stores extension preferences
@@ -201,9 +193,6 @@ class Storage {
         const prefs = obj[StorageItem.Prefs];
         this._prefs = prefs ? JSON.parse(prefs) : {};
 
-        // parse last post time
-        this._lastPostTime = obj[StorageItem.LastPost] || 0;
-
         // parse read comments
         // we store each post as a separate item in storage,
         // however it's useful to hold them together for easy
@@ -217,12 +206,9 @@ class Storage {
 
     // Store cached extension data to synced storage
     _storeData(what) {
-        const data = {};
+        this._pendingSaveData = this._pendingSaveData || {};
         if (!what || what === StorageItem.Prefs)
-            data[StorageItem.Prefs] = JSON.stringify(this._prefs);
-
-        if (!what || what === StorageItem.LastPost)
-            data[StorageItem.LastPost] = this._lastPostTime;
+            this._pendingSaveData[StorageItem.Prefs] = JSON.stringify(this._prefs);
 
         // don't store this if incognito mode
         if (!chrome.extension.inIncognitoContext) {
@@ -231,13 +217,22 @@ class Storage {
             // have an individual item per post
             if (!what || what === StorageItem.PostData) {
                 for (const postId of Object.keys(this._postData)) {
-                    data[postId] = this._postData[postId];
+                    this._pendingSaveData[postId] = this._postData[postId];
                 }
             }
         }
 
-        this._modifyingStorage = true;
-        this._storageArea.set(data);
+        this._throttledSaveToStorage();
+    }
+
+    // Helper to be wrapped in a throttle call which actually saves the data
+    // to storage
+    _saveToStorage() {
+        if (this._pendingSaveData && Object.keys(this._pendingSaveData).length !== 0) {
+            this._modifyingStorage = true;
+            this._storageArea.set(this._pendingSaveData);
+            this._pendingSaveData = null;
+        }
     }
 }
 
