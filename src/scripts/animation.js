@@ -23,8 +23,9 @@ class Animation {
             return false;
         } else {
             this._onUpdate(this._endVal);
-            if (this._onComplete)
+            if (this._onComplete) {
                 this._onComplete();
+            }
             return true;
         }
     };

@@ -8,6 +8,7 @@
 //   * toolbar.js
 //   * utility.js
 
+const minScrollInterval = 150;
 class JoshuaTreeExtension {
     constructor(contentDocument) {
         this._postId = -1;                  // id of post currently being viewed
@@ -51,6 +52,7 @@ class JoshuaTreeExtension {
         // is currently at the top. Update the 'read' comment state then based on which
         // the user has scrolled to
         const scrollPos = (window.scrollY || window.pageYOffset) + this._getScrollOffsetAmount();
+
         let newIndex = this._unreadComments.length - 1;
         for (let i = 0; i < this._unreadComments.length; i++) {
             const comment = this._commentProcessor.getComment(this._unreadComments[i]);
@@ -101,7 +103,7 @@ class JoshuaTreeExtension {
         }, 100);
 
         // Set up scroll event listener to update the toolbar based on current scroll location 
-        window.addEventListener("scroll", Utility.throttle(() => this._handleScroll(), 150));
+        window.addEventListener("scroll", Utility.throttle(() => this._handleScroll(), minScrollInterval));
 
         this._commentProcessor.processDocument()
             .then(unreadComments => {
@@ -218,7 +220,9 @@ class JoshuaTreeExtension {
             eltId,
             easing,
             -this._getScrollOffsetAmount(),
-            () => this._scrolling = false);
+            // clear flag once animation complete. Note that the delay here needs to
+            // match/exceed the throttle timing as that may delay scroll event timing
+            () => window.setTimeout(() => this._scrolling = false, minScrollInterval)); 
     }
 
     // Updates the index of the current read comment and scrolls to the comment

@@ -102,26 +102,30 @@ class Utility {
 
     // Throttle helper which returns a function that wraps the given function, ensuring it gets called
     // no more frequently than 'threshold' milliseconds.  Will execute with the last args passed
-    static throttle(fn, threshold) {
+    static throttle(fn, threshold = 250) {
         let args;
-        let last;
-        let timerId;
+        let last = 0;
+        let timerId = 0;
 
-        threshold = threshold || 250;
-
-        const later = () => {
+        function later() {
             last = Date.now();
             timerId = undefined;
             fn.apply(undefined, args);
         };
 
-        return () => {
+        // arrow functions don't have 'arguments' object, so use function
+        return function() {
             args = arguments;
-            if (last && Date.now() < (last + threshold)) {
-                timerId = timerId || window.setTimeout(later, threshold);
-            } else {
+            const now = Date.now();
+            const remaining = threshold - (now - last);
+            if (remaining <= 0 && !timerId) {
+                // if theres already a timer pending, just wait for it to fire
+                // even if enough time has elapsed
                 later();
+            } else {
+                timerId = timerId || window.setTimeout(later, remaining);
             }
         };
     }
 }
+
