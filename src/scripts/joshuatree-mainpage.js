@@ -47,7 +47,7 @@ class JoshuaTreeExtension {
                 const totalComments = commentMatches[1];
                 const postMatches = joshuaTreeResources.postRegExp.exec(link.href);
 
-                if (totalComments === 0) {
+                if (totalComments == 0) {
                     // don't modify text if no comments at all
                     continue;
                 }
