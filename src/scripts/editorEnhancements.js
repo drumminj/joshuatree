@@ -7,12 +7,14 @@ class EditorEnhancements {
     constructor(contentDocument) {
         this._document = contentDocument;
         this._onFormatButtonClick = this._onFormatButtonClick.bind(this);
-        this._addQuoteHandlers(contentDocument);
+        // $2019-04-20: disabled for now due to blog software change
+        // this._addQuoteHandlers(contentDocument);
         this._addCommentValidation(contentDocument);
         this._addFormatButtons(contentDocument);
         this._tweakCommentForm(contentDocument);
     }
 
+    // Add code to validate HTML in comment/reply when user clicks 'Submit'
     _addCommentValidation(contentDocument) {
         const submitButton = contentDocument.getElementById('submit');
         if (!submitButton) {

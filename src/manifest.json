@@ -3,7 +3,7 @@
 
     "name": "JoshuaTree",
     "description": "Usability enhancements for The Housing Bubble Blog (http://housingbubble.blog)",
-    "version": "4.9.2",
+    "version": "4.9.3",
 
     "applications": {
         "gecko": {
