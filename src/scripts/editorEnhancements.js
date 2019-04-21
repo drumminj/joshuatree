@@ -7,8 +7,8 @@ class EditorEnhancements {
     constructor(contentDocument) {
         this._document = contentDocument;
         this._onFormatButtonClick = this._onFormatButtonClick.bind(this);
-        // $2019-04-20: disabled for now due to blog software change
-        // this._addQuoteHandlers(contentDocument);
+
+        this._addQuoteHandlers(contentDocument);
         this._addCommentValidation(contentDocument);
         this._addFormatButtons(contentDocument);
         this._tweakCommentForm(contentDocument);
@@ -83,28 +83,22 @@ class EditorEnhancements {
             .getElementById('comments')
             .getElementsByClassName('comment-reply-link');
 
+        let selectedText = '';
+        const onMouseDown = () => {
+            selectedText = contentDocument.getSelection().toString();
+        };
+        const onClick = () => {
+            if (selectedText) {
+                commentTextArea.value = `<em>${selectedText.trim()}</em>\n\n`;
+            }
+        };
         for (const link of replyLinks) {
-            // create a link that's a clone of the original, as on Chrome we can't just
-            // null out the onclick handler
-            const clone = Utility.createAnchor(contentDocument, link.textContent, link.href, link.className);
-            clone.style = link.style;
-
-            // save off the click handler from existing link
-            const clickStr = link.getAttribute('onclick');
-
-            // attach new handler to get document selection, 'quote' it in
-            // comment form, then run the original click handling script when done
-            clone.addEventListener('click', evt => {
-                Utility.killEvent(evt);
-                const selectedText = contentDocument.getSelection().toString();
-                if (selectedText) {
-                    commentTextArea.value = `<em>${selectedText.trim()}</em>\n\n`;
-                }
-                Utility.injectScript(clickStr);
-            });
-
-            link.parentNode.insertBefore(clone, link);
-            link.parentNode.removeChild(link);
+            // Attach mousedown event handler to store off document selection
+            // (can't be done on click due to event-handler ordering on Chrome)
+            // Then Attach a click event handler to auto-add the selected text
+            // as a quote in the comment form
+            link.addEventListener('mousedown', onMouseDown);
+            link.addEventListener('click', onClick);
         }
     }
 
