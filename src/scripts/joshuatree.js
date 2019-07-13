@@ -195,7 +195,9 @@ class JoshuaTreeExtension {
     _addBlankTargetToLinks(contentDocument) {
         const location = contentDocument.location;
         const postUrl = `${location.origin}${location.pathname}${location.search}`
-        const allLinks = contentDocument.getElementById('comments').getElementsByTagName('A');
+        const allLinks = contentDocument
+            .getElementById('comments')
+            .getElementsByTagName('A');
 
         for (const link of Array.from(allLinks)) {
             if (link.href && !link.href.startsWith(postUrl)) {

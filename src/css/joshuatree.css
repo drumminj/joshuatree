@@ -37,7 +37,16 @@
 
 .meta-comments.new-comments,
 .meta-comments.new-comments a.comments-link {
-    color: rgba(51,85,119);
+    color: #357;
+}
+
+.meta-comments.new-comments a.comments-link:hover {
+    text-decoration: underline;
+}
+
+.meta .meta-author a:hover,
+.meta-comments a.comments-link:hover {
+    color: #357;
 }
 
 .jt-hidden-comment {
