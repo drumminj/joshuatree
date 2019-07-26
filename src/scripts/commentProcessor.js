@@ -38,7 +38,23 @@ class CommentProcessor {
                         this._unreadCommentIds.push(comment.id);
                     }
 
-                    const isIgnored = ignoredUsers && ignoredUsers.indexOf(comment.author.toLowerCase()) !== -1;
+                    // const isIgnored = ignoredUsers && ignoredUsers.indexOf(comment.author.toLowerCase()) !== -1;
+                    let isIgnored = false;
+                    for (const user of ignoredUsers) {
+                        // handle case of users who cycle through iterations of screen names.
+                        // Not 100% accurate, but checking for common substring that has ~70%
+                        // overlap is hopefully a close enough approximation
+                        const fragmentLength = (user.length >= 8) ?
+                                Math.floor(user.length * .7) :
+                                Math.round(user.length * .75);
+
+                        const lowerAuthor = comment.author.toLowerCase();
+                        if ((lowerAuthor.startsWith(user.substr(0, fragmentLength)) || lowerAuthor.endsWith(user.substr(user.length - fragmentLength))) &&
+                            (fragmentLength / lowerAuthor.length) > 0.5) {
+                            isIgnored = true;
+                            break;
+                        }
+                    }
                     comment.markAsIgnored(isIgnored);
                 }
 
