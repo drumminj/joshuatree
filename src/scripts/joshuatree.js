@@ -99,7 +99,9 @@ class JoshuaTreeExtension {
         window.setTimeout(() => {
             const hash = (location.hash.charAt(0) === '#') ? location.hash.substring(1) : location.hash;
             const scrollToId = (hash === 'view_comments' || hash === 'comments_reply') ? 'comments' : hash;
-            this._scrollToPageItem(scrollToId, 'easeInOutSine');
+            // if there's no hash, then nothing to scroll to
+            if (scrollToId)
+                this._scrollToPageItem(scrollToId, 'easeInOutSine');
         }, 100);
 
         // Set up scroll event listener to update the toolbar based on current scroll location 
@@ -215,6 +217,9 @@ class JoshuaTreeExtension {
     // Helper/wrapper to scroll to the document element with the given id, using the specified
     // easing function for the animation
     _scrollToPageItem(eltId, easing) {
+        if (!eltId)
+            return;
+
         // set flag to ignore scroll events while we're the ones scrolling
         this._scrolling = true;
         Utility.scrollToElement(
